@@ -187,18 +187,78 @@
 // 
 //       
 
-function raceTimeout(fetchDataPromise, timeout){
-   return new Promise((resolve, reject) => {
-      if (fetchDataPromise.status === 'FULLFILD') {
-         setTimeout(resolve(fetchDataPromise), timeout)
-      }else{
-         reject('Запит неуспішний')
-      }
-   })
+// function raceTimeout(fetchDataPromise, timeout){
+//    return new Promise((resolve, reject) => {
+//       if (fetchDataPromise.status === 'FULLFILD') {
+//          setTimeout(resolve(fetchDataPromise), timeout)
+//       }else{
+//          reject('Запит неуспішний')
+//       }
+//    })
+// }
+
+// const fetchDataPromise = fetch('https://api.example.com/data');
+// const timeout = 5000;
+// raceTimeout(fetchDataPromise, timeout)
+// .then((data) => {console.log(data);})
+// .catch((error => {console.log(error);})) 
+
+const btn = document.querySelector('.js-btn')
+const winer = document.querySelector('.winer')
+const progress = document.querySelector('.prograst')
+
+btn.addEventListener('click', ()=>{
+   progress.textContent = `🤖 Заїзд розпочався, ставки не приймаються!`
+   const promises = horses.map((horse)=>{
+      return run(horse)
+    })
+    Promise.race(promises)
+    .then(({horse, time})=>{
+        winer.textContent =`🎉 Переможець ${horse}, финишував за ${time}мс часу`
+    })
+
+    Promise.all(promises)
+ .then(answer => {progress.textContent = `📝 Заїзд закінчився, приймаються ставки.`
+   setTimeout(()=>{winer.textContent = ''}, 4010)}
+ )
+})
+
+console.log(`🤖 Заїзд розпочався, ставки не приймаються!`);
+const horses = [
+   'Secretariat',
+   'Eclipse',
+   'West Australian',
+   'Flying Fox',
+   'Seabiscuit',
+ ];
+
+ const promises = horses.map((horse)=>{
+   return run(horse)
+ })
+
+ Promise.race(promises)
+.then(({horse, time})=>{
+    console.log(`%c🎉 Переможець ${horse}, финишував за ${time}мс часу`,'color: green');
+})
+
+function run(horse){
+    return new Promise((resolve, reject)=>{
+        const time = getRandomTime(3000, 4000)
+
+        setTimeout(()=>{
+            resolve({
+                horse,
+                time
+            })
+        },time)
+    })
 }
 
-const fetchDataPromise = fetch('https://api.example.com/data');
-const timeout = 5000;
-raceTimeout(fetchDataPromise, timeout)
-.then((data) => {console.log(data);})
-.catch((error => {console.log(error);})) 
+ function getRandomTime(min, max) {
+   return Math.floor(Math.random() * (max - min + 1) + min);
+ }
+
+//  run(horses).then(win=>console.log(win)).catch(error=>{console.log(error);})
+
+ Promise.all(promises)
+ .then(answer => console.log(`📝 Заїзд закінчився, приймаються ставки.`))
